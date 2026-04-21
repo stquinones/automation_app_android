@@ -1,0 +1,4 @@
+{
+  "using": "xpath",
+  "value": "//android.widget.TextView[@content-desc=\"Kicillof celebró sus cinco años de gestión con duras críticas a Milei: “Es una fiesta para pocos y un desastre para la mayoría”\"]"
+}

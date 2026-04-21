@@ -1,0 +1,4 @@
+{
+  "using": "xpath",
+  "value": "//android.widget.TextView[@resource-id=\"button-text\" and @text=\"Volver al inicio\"]"
+}

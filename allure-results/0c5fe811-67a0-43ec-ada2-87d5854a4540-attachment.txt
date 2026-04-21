@@ -1,0 +1,1 @@
+stale element reference: WebDriverError: The element 'By.accessibilityId: En vivo. Transmisión en tiempo real' does not exist in DOM anymore when running "element/00000000-0000-00fa-ffff-ffff00000035/displayed" with method "GET"

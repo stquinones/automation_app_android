@@ -1,0 +1,4 @@
+{
+  "using": "xpath",
+  "value": "//android.widget.TextView[@content-desc=\"Tras el desplazamiento de Florencia Misrahi, el Gobierno nombró a Juan Pazo como el nuevo titular de ARCA/. Tras el desplazamiento de Florencia Misrahi, el Gobierno nombró a Juan Pazo como el nuevo titular de ARCA\"]"
+}

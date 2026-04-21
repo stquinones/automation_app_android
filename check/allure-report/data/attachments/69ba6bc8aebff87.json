@@ -1,0 +1,4 @@
+{
+  "using": "xpath",
+  "value": "//com.horcrux.svg.SvgView[@content-desc=\"Atrás\"]"
+}
