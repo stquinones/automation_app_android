@@ -1,0 +1,5 @@
+- name: Enviar a Slack
+        run: node scripts/slack.js
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_TEXT: ${{ steps.reporte.outputs.SLACK_TEXT }}
