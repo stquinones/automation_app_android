@@ -2,6 +2,9 @@ const https = require('https');
 
 const webhook = process.env.SLACK_WEBHOOK_URL;
 
+console.log("WEBHOOK:", webhook ? "OK" : "NO");
+console.log("SLACK_TEXT:", process.env.SLACK_TEXT);
+
 if (!webhook) {
   console.error('❌ No se encontró SLACK_WEBHOOK_URL');
   process.exit(1);

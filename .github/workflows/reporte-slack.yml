@@ -1,30 +1,9 @@
-name: Procesar log y enviar a Slack
+- name: Generar reporte
+  id: reporte
+  run: node scripts/generate-report.js
 
-on:
-  push:
-    paths:
-      - 'scripts/log/**'
-
-jobs:
-  procesar-y-notificar:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Instalar dependencias
-        run: npm install
-
-      - name: Generar reporte
-        run: node scripts/generate-report.js
-
-      - name: Enviar a Slack
-        run: node scripts/slack.js
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+- name: Enviar a Slack
+  run: node scripts/slack.js
+  env:
+    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    SLACK_TEXT: ${{ steps.reporte.outputs.SLACK_TEXT }}
