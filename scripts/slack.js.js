@@ -1,4 +1,4 @@
-const https = require('https');
+/*const https = require('https');
 
 const webhook = process.env.SLACK_WEBHOOK_URL;
 
@@ -30,6 +30,35 @@ const options = {
 };
 
 const req = https.request(options, res => {
+  console.log(`Slack response: ${res.statusCode}`);
+});
+
+req.on('error', error => {
+  console.error('Error enviando a Slack:', error);
+});
+
+req.write(data);
+req.end();*/
+const https = require('https');
+
+const webhook = process.env.SLACK_WEBHOOK_URL;
+const messageText = process.env.SLACK_TEXT || "🚀 Reporte generado";
+
+console.log("WEBHOOK:", webhook ? "OK" : "NO");
+console.log("SLACK_TEXT:", messageText);
+
+const data = JSON.stringify({
+  text: messageText
+});
+
+// 🔥 clave: usar la URL completa directo
+const req = https.request(webhook, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Content-Length': data.length
+  }
+}, res => {
   console.log(`Slack response: ${res.statusCode}`);
 });
 
