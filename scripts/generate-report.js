@@ -3,8 +3,10 @@ const fs = require('fs');
 // =========================
 // Entrada / salida
 // =========================
-const inputFile = process.argv[2];
-const outputFile = process.argv[3];
+//const inputFile = process.argv[2];
+//const outputFile = process.argv[3];
+const inputFile = 'scripts/log/test-spec-output.txt';
+const outputFile = 'scripts/report/reporte.html';
 
 // =========================
 // Leer archivo completo
