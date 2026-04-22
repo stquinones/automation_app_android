@@ -51,12 +51,11 @@ const data = JSON.stringify({
   text: messageText
 });
 
-// 🔥 clave: usar la URL completa directo
 const req = https.request(webhook, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Content-Length': data.length
+    'Content-Length': Buffer.byteLength(data) // 🔥 FIX CLAVE
   }
 }, res => {
   console.log(`Slack response: ${res.statusCode}`);
