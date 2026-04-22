@@ -184,7 +184,7 @@ fs.writeFileSync(outputFile, htmlReport);
 // =========================
 const slackText =
   totalFailed > 0
-    ? `🚨 Resultados: ${totalPassed} PASSED – ${totalFailed} FAILED`
+    ? `🚨 Resultados: ${totalPassed} PASSED - ${totalFailed} FAILED`
     : `🎉 Todos los tests PASSED (${totalPassed})`;
 
 if (process.env.GITHUB_OUTPUT) {
