@@ -170,6 +170,13 @@ const htmlReport = `
 // =========================
 // Escribir archivo
 // =========================
+const path = require('path');
+
+const outputDir = path.dirname(outputFile);
+
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir, { recursive: true });
+}
 fs.writeFileSync(outputFile, htmlReport);
 
 // =========================
