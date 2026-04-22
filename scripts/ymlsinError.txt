@@ -29,10 +29,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: reporte-html
-          path: scripts/report/reporte.html
+          path: scripts/report/reporte.html  
 
       - name: Enviar a Slack
-        run: |
-          curl -X POST -H "Content-type: application/json" \
-          --data "{\"text\":\"🚀 Reporte Device Farm\n${{ steps.reporte.outputs.SLACK_TEXT }}\n\n📦 https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
+  run: |
+    curl -X POST -H "Content-type: application/json" \
+    --data "{\"text\":\"🚀 *Reporte Device Farm*\n${{ steps.reporte.outputs.SLACK_TEXT }}\n\n📦 <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|Descargar reporte (artifact)>\"}" \
+    ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      
