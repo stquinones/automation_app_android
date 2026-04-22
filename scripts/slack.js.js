@@ -7,12 +7,13 @@ if (!webhook) {
   process.exit(1);
 }
 
-// Mensaje simple (después lo mejoramos)
+// Mensaje seguro
 const message = {
   text: "🚀 Reporte generado correctamente desde GitHub Actions"
 };
 
 const data = JSON.stringify(message);
+
 const url = new URL(webhook);
 
 const options = {
