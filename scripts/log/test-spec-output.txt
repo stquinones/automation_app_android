@@ -5470,4 +5470,4 @@ Spec Files:	 0 passed, 1 failed, 1 total (100% completed) in 00:02:04
  
  
 [DEVICEFARM] Tearing down your device. Your tests report will come shortly.
-Run at mi‚. 29/04/2026 11:30:13,71 
+Run at vie. 01/05/2026 11:30:13,99 
