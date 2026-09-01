@@ -1,4 +1,4 @@
-const { execSync, exec } = require("child_process");
+const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
@@ -7,8 +7,13 @@ const https = require("https");
 // CONFIGURACIÓN
 // ======================================================
 
+// Proyecto de AWS Device Farm
 const PROJECT_ARN =
   "arn:aws:devicefarm:us-west-2:727454133357:project:5648f1c7-6a51-4cf5-9d08-6aa64bfcc944";
+
+// RUN ESPECÍFICA que queremos utilizar
+const RUN_ARN =
+  "arn:aws:devicefarm:us-west-2:727454133357:run:5648f1c7-6a51-4cf5-9d08-6aa64bfcc944/26322a3c-2d78-420b-aa0d-6033e4765a0b";
 
 const DOWNLOAD_DIR = path.join(__dirname, "log");
 const FILE_NAME = "test-spec-output.txt";
@@ -30,7 +35,10 @@ if (!fs.existsSync(DOWNLOAD_DIR)) {
 // ======================================================
 
 function runAws(cmd) {
-  const result = execSync(cmd).toString();
+  const result = require("child_process")
+    .execSync(cmd)
+    .toString();
+
   return JSON.parse(result);
 }
 
@@ -40,12 +48,16 @@ function runAws(cmd) {
 
 function downloadFile(url, filePath) {
   return new Promise((resolve, reject) => {
+
     const file = fs.createWriteStream(filePath);
 
     https
       .get(url, response => {
+
         if (response.statusCode !== 200) {
+
           file.close();
+
           fs.unlink(filePath, () => {});
 
           reject(
@@ -60,16 +72,20 @@ function downloadFile(url, filePath) {
         response.pipe(file);
 
         file.on("finish", () => {
+
           file.close();
 
-          console.log("📥 Archivo descargado en:");
+          console.log("\n📥 Archivo descargado en:");
           console.log(filePath);
 
           resolve();
         });
       })
+
       .on("error", err => {
+
         file.close();
+
         fs.unlink(filePath, () => {});
 
         reject(err);
@@ -82,7 +98,9 @@ function downloadFile(url, filePath) {
 // ======================================================
 
 function autoPush() {
+
   return new Promise((resolve, reject) => {
+
     console.log("\n🚀 Ejecutando auto-push...");
     console.log("📄 BAT:", AUTO_PUSH_BAT);
 
@@ -91,16 +109,19 @@ function autoPush() {
       (error, stdout, stderr) => {
 
         if (stdout) {
+
           console.log("\n📤 Salida del auto-push:");
           console.log(stdout);
         }
 
         if (stderr) {
+
           console.log("\n⚠️ STDERR:");
           console.log(stderr);
         }
 
         if (error) {
+
           console.error(
             "\n❌ Error en auto-push:",
             error.message
@@ -127,107 +148,42 @@ async function main() {
   try {
 
     // --------------------------------------------------
-    // BUSCAR RUNS
+    // MOSTRAR RUN QUE VAMOS A UTILIZAR
     // --------------------------------------------------
 
-    console.log("🔎 Buscando runs...");
-    console.log("📁 Proyecto:");
+    console.log("\n========================================");
+    console.log("🎯 DEVICE FARM");
+    console.log("========================================");
+
+    console.log("\n📁 Proyecto:");
     console.log(PROJECT_ARN);
 
-    const runs = runAws(
-      `aws devicefarm list-runs --arn "${PROJECT_ARN}"`
-    ).runs;
+    console.log("\n🎯 RUN ESPECÍFICA:");
+    console.log(RUN_ARN);
 
-    if (!runs || runs.length === 0) {
-      console.log("❌ No se encontraron runs.");
-      return;
-    }
-
-    // --------------------------------------------------
-    // ORDENAR RUNS POR FECHA
-    // MÁS NUEVO → MÁS VIEJO
-    // --------------------------------------------------
-
-    runs.sort(
-      (a, b) =>
-        new Date(b.created) - new Date(a.created)
-    );
-
-    // --------------------------------------------------
-    // MOSTRAR ÚLTIMOS RUNS
-    // --------------------------------------------------
-
-    console.log("\n📋 Últimos runs encontrados:");
-
-    runs.slice(0, 5).forEach((run, index) => {
-
-      console.log(
-        `\n${index + 1}. ${run.created}`
-      );
-
-      console.log(
-        `   Estado: ${run.status}`
-      );
-
-      console.log(
-        `   Nombre: ${run.name}`
-      );
-
-      console.log(
-        `   ARN: ${run.arn}`
-      );
-    });
-
-    // --------------------------------------------------
-    // BUSCAR ÚLTIMO RUN COMPLETED
-    // --------------------------------------------------
-
-    const completed = runs.find(
-      run => run.status === "COMPLETED"
-    );
-
-    if (!completed) {
-      console.log(
-        "\n❌ No hay runs COMPLETED."
-      );
-
-      return;
-    }
-
-    // --------------------------------------------------
-    // MOSTRAR RUN SELECCIONADO
-    // --------------------------------------------------
-
-    console.log("\n");
-    console.log("========================================");
-    console.log("🎯 RUN SELECCIONADO");
+    console.log("\n========================================");
+    console.log("🔎 Buscando jobs de ESTA RUN...");
     console.log("========================================");
 
-    console.log("Nombre :", completed.name);
-    console.log("Fecha  :", completed.created);
-    console.log("Estado :", completed.status);
-    console.log("ARN    :", completed.arn);
-
-    console.log("========================================");
-    console.log("\n");
-
     // --------------------------------------------------
-    // BUSCAR JOBS
+    // BUSCAR JOBS DE LA RUN ESPECÍFICA
     // --------------------------------------------------
-
-    console.log("🔎 Buscando jobs...");
 
     const jobs = runAws(
-      `aws devicefarm list-jobs --arn "${completed.arn}"`
+      `aws devicefarm list-jobs --arn "${RUN_ARN}"`
     ).jobs;
 
     if (!jobs || jobs.length === 0) {
-      console.log("❌ No se encontraron jobs.");
+
+      console.log(
+        "\n❌ No se encontraron jobs en esta RUN."
+      );
+
       return;
     }
 
     console.log(
-      `📱 Jobs encontrados: ${jobs.length}`
+      `\n📱 Jobs encontrados: ${jobs.length}`
     );
 
     // --------------------------------------------------
@@ -237,9 +193,15 @@ async function main() {
     for (const job of jobs) {
 
       console.log("\n----------------------------------------");
-      console.log("📱 Job:", job.name);
-      console.log("🔗 ARN:", job.arn);
+      console.log("📱 JOB");
       console.log("----------------------------------------");
+
+      console.log("Nombre:", job.name);
+      console.log("ARN   :", job.arn);
+
+      // ------------------------------------------------
+      // BUSCAR ARTIFACTS
+      // ------------------------------------------------
 
       const artifacts = runAws(
         `aws devicefarm list-artifacts --arn "${job.arn}" --type FILE`
@@ -250,7 +212,12 @@ async function main() {
           artifact.name === "Test spec output"
       );
 
+      // ------------------------------------------------
+      // SI NO EXISTE EL ARCHIVO
+      // ------------------------------------------------
+
       if (!file) {
+
         console.log(
           "⚠️ Este job no tiene Test spec output."
         );
@@ -259,14 +226,40 @@ async function main() {
       }
 
       // ------------------------------------------------
+      // ARCHIVO ENCONTRADO
+      // ------------------------------------------------
+
+      console.log(
+        "\n========================================"
+      );
+
+      console.log(
+        "🎯 TEST SPEC OUTPUT ENCONTRADO"
+      );
+
+      console.log(
+        "========================================"
+      );
+
+      console.log("RUN ARN:");
+      console.log(RUN_ARN);
+
+      console.log("\nJOB ARN:");
+      console.log(job.arn);
+
+      console.log("\nARTIFACT:");
+      console.log(file.name);
+
+      console.log("\nURL:");
+      console.log(file.url);
+
+      // ------------------------------------------------
       // DESCARGAR
       // ------------------------------------------------
 
       console.log(
-        "\n⬇️ Encontrado: Test spec output"
+        "\n⬇️ Descargando Test spec output..."
       );
-
-      console.log("⬇️ Descargando...");
 
       await downloadFile(
         file.url,
@@ -274,7 +267,7 @@ async function main() {
       );
 
       console.log(
-        "✅ Descarga completa"
+        "\n✅ Descarga completa"
       );
 
       // ------------------------------------------------
@@ -284,7 +277,15 @@ async function main() {
       await autoPush();
 
       console.log(
-        "\n🏁 Proceso completo."
+        "\n========================================"
+      );
+
+      console.log(
+        "🏁 PROCESO COMPLETO"
+      );
+
+      console.log(
+        "========================================"
       );
 
       return;
@@ -295,7 +296,7 @@ async function main() {
     // --------------------------------------------------
 
     console.log(
-      "\n❌ No se encontró Test spec output en ningún job."
+      "\n❌ No se encontró Test spec output en ningún job de esta RUN."
     );
 
   } catch (error) {
