@@ -194,3 +194,4 @@ if (process.env.GITHUB_OUTPUT) {
 }
 
 console.log('📄 Reporte generado correctamente');
+
